@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ScholarSync</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ScholarSync">
+<meta name="theme-color" content="#080c14">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <img src="logo.png" class="auth-logo-img" alt="ScholarSync">
+      <div class="auth-logo-text">ScholarSync</div>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuth('signin')">Sign In</button>
+      <button class="auth-tab" onclick="switchAuth('signup')">Sign Up</button>
+    </div>
+    <div id="auth-error" class="auth-error" style="display:none"></div>
+
+    <!-- SIGN IN -->
+    <div id="signin-form">
+      <input class="input" type="email" placeholder="Email address" id="si-email">
+      <input class="input" type="password" placeholder="Password" id="si-password">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <input type="checkbox" id="si-remember" style="width:16px;height:16px;cursor:pointer;">
+        <label for="si-remember" style="font-size:13px;color:var(--gray);cursor:pointer;">Remember me</label>
+      </div>
+      <button class="btn-primary" onclick="signIn()">Sign In</button>
+      <div class="auth-link" onclick="showForgot()">Forgot password?</div>
+    </div>
+
+    <!-- SIGN UP -->
+    <div id="signup-form" style="display:none">
+      <input class="input" type="text" placeholder="Full name" id="su-name">
+      <input class="input" type="email" placeholder="Email address" id="su-email">
+      <input class="input" type="password" placeholder="Password" id="su-password">
+      <select class="input" id="su-school">
+        <option value="">Select your school...</option>
+        <option>Carolina Forest High School</option>
+        <option>Conway High School</option>
+        <option>Myrtle Beach High School</option>
+        <option>North Myrtle Beach High School</option>
+        <option>Socastee High School</option>
+        <option>St. James High School</option>
+        <option>Aynor High School</option>
+        <option>Loris High School</option>
+        <option>Green Sea Floyds High School</option>
+        <option>Whittemore Park Middle/High School</option>
+        <option>ATAA</option>
+      </select>
+      <select class="input" id="su-grade">
+        <option value="">Select grade...</option>
+        <option>9th Grade</option>
+        <option>10th Grade</option>
+        <option>11th Grade</option>
+        <option>12th Grade</option>
+        <option>Staff / Teacher</option>
+      </select>
+      <button class="btn-primary" onclick="signUp()">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" style="display:none">
+
+  <!-- MOBILE TOP BAR -->
+  <div class="mobile-topbar">
+    <button class="hamburger" onclick="toggleSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="mobile-logo">ScholarSync</div>
+    <button class="notif-bell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg></button>
+  </div>
+
+  <!-- SIDEBAR OVERLAY -->
+  <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <img src="logo.png" class="sidebar-logo-img" alt="ScholarSync">
+      <div>
+        <div class="sidebar-logo-text">ScholarSync</div>
+        <div class="sidebar-school" id="sidebar-school">Loading...</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">HOME</div>
+      <button class="nav-item active" onclick="nav('today')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        Today
+      </button>
+      <button class="nav-item" onclick="nav('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" onclick="nav('schedule')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        Bell Schedule
+      </button>
+      <button class="nav-item" onclick="nav('idcard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 10h2M16 14h2M6 10h.01M6 14h.01"/></svg>
+        Student ID
+      </button>
+      <button class="nav-item" onclick="nav('weather')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>
+        Weather
+      </button>
+
+      <div class="nav-section-label">ACADEMIC</div>
+      <button class="nav-item" onclick="nav('homework')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+        Homework
+      </button>
+      <button class="nav-item" onclick="nav('notes')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Class Notes
+      </button>
+      <button class="nav-item" onclick="nav('deadlines')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Deadlines
+      </button>
+      <button class="nav-item" onclick="nav('countdown')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        Exam Countdown
+      </button>
+      <button class="nav-item" onclick="nav('studytimer')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12"/></svg>
+        Study Timer
+      </button>
+      <button class="nav-item" onclick="nav('flashcards')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        Flashcards
+      </button>
+      <button class="nav-item" onclick="nav('absences')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Absences
+      </button>
+
+      <div class="nav-section-label">SCHOOL</div>
+      <button class="nav-item" onclick="nav('calendar')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Calendar
+      </button>
+      <button class="nav-item" onclick="nav('announcements')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 17H2a3 3 0 000 6h20a3 3 0 000-6zM22 11V4a1 1 0 00-1.447-.894L12 8 3.447 3.106A1 1 0 002 4v7"/></svg>
+        Announcements
+        <span class="nav-badge" id="ann-badge" style="display:none">0</span>
+      </button>
+      <button class="nav-item" onclick="nav('classroom')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        Classroom
+      </button>
+      <button class="nav-item" onclick="nav('clubs')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Clubs
+      </button>
+      <button class="nav-item" onclick="nav('sports')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/><path d="M2 12h20"/></svg>
+        Sports
+      </button>
+      <button class="nav-item" onclick="nav('polls')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Polls
+      </button>
+      <button class="nav-item" onclick="nav('directory')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        Directory
+      </button>
+      <button class="nav-item" onclick="nav('lost')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Lost & Found
+      </button>
+      <button class="nav-item" onclick="nav('carpool')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        Carpool
+      </button>
+
+      <div class="nav-section-label">SOCIAL</div>
+      <button class="nav-item" onclick="openSearch()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search
+      </button>
+      <button class="nav-item" onclick="nav('chat')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Group Chats
+        <span class="nav-badge" id="chat-badge" style="display:none">0</span>
+      </button>
+      <button class="nav-item admin-only" onclick="nav('adminchat')" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><circle cx="18" cy="4" r="4" fill="#f59e0b" stroke="none"/></svg>
+        Admin Chat
+        <span style="font-size:9px;background:rgba(245,158,11,.2);color:#f59e0b;padding:1px 6px;border-radius:10px;margin-left:2px;">ADMIN</span>
+      </button>
+      <button class="nav-item teacher-only" onclick="nav('teacherchat')" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><circle cx="18" cy="4" r="4" fill="#8b5cf6" stroke="none"/></svg>
+        Teacher Chat
+        <span style="font-size:9px;background:rgba(139,92,246,.2);color:#8b5cf6;padding:1px 6px;border-radius:10px;margin-left:2px;">STAFF</span>
+      </button>
+      <button class="nav-item" onclick="nav('tips')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Tip Line
+      </button>
+      <button class="nav-item" onclick="nav('newspaper')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 002-2V4a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 01-2 2zm0 0a2 2 0 01-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg>
+        School Newspaper
+      </button>
+      <button class="nav-item" onclick="nav('leaderboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        Leaderboard
+      </button>
+      <button class="nav-item" onclick="nav('studygroups')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Study Groups
+      </button>
+      <button class="nav-item" onclick="nav('reminders')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+        Reminders
+      </button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebar-avatar">?</div>
+        <div>
+          <div class="sidebar-name" id="sidebar-name">Loading...</div>
+          <div class="sidebar-email" id="sidebar-email">...</div>
+        </div>
+      </div>
+      <button class="nav-item" onclick="nav('profile')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile & Admin
+      </button>
+      <button class="nav-item" id="teacher-panel-btn" style="display:none" onclick="nav('teacherpanel')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        Teacher Panel
+      </button>
+      <button class="nav-item theme-toggle" onclick="toggleTheme()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+        <span id="theme-label">Light Mode</span>
+      </button>
+      <button class="nav-item signout-btn" onclick="signOut()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- TODAY -->
+    <div class="page active" id="page-today">
+      <div class="page-header">
+        <div><div class="page-title">Today</div><div class="page-sub">Your day at a glance</div></div>
+      </div>
+      <div class="clock-hero">
+        <div class="clock-time" id="clock">--:--:-- --</div>
+        <div class="clock-date" id="clock-date">Loading...</div>
+      </div>
+      <div class="period-banner" id="period-banner">
+        <div>
+          <div class="period-banner-label">CURRENT PERIOD</div>
+          <div class="period-banner-name" id="period-name">—</div>
+        </div>
+        <div class="period-banner-right">
+          <div class="period-banner-time" id="period-time">—</div>
+          <div class="period-banner-sub">remaining</div>
+        </div>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="period-progress" style="width:0%"></div></div>
+      <div class="grid-2" style="margin-top:16px;">
+        <div class="card">
+          <div class="card-label">HOMEWORK DUE TODAY</div>
+          <div id="today-hw-list"><div class="empty-state">No homework due today 🎉</div></div>
+        </div>
+        <div class="card">
+          <div class="card-label">LATEST ANNOUNCEMENT</div>
+          <div id="today-ann"><div class="empty-state">No announcements yet</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="page" style="display:none" id="page-dashboard">
+      <div class="page-header">
+        <div><div class="page-title">Dashboard</div><div class="page-sub">Your stats & overview</div></div>
+      </div>
+      <div class="grid-4">
+        <div class="stat-card"><div class="stat-val" id="stat-grade">—</div><div class="stat-label">Avg Grade</div></div>
+        <div class="stat-card"><div class="stat-val" id="stat-classes">0</div><div class="stat-label">Classes Joined</div></div>
+        <div class="stat-card"><div class="stat-val" id="stat-due">0</div><div class="stat-label">Due This Week</div></div>
+        <div class="stat-card"><div class="stat-val" id="stat-abs">0</div><div class="stat-label">Unexcused</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-label">MY CLASSROOMS</div>
+          <div id="dash-classrooms"><div class="empty-state">No classes joined yet</div></div>
+        </div>
+        <div class="card">
+          <div class="card-label">UPCOMING DEADLINES</div>
+          <div id="dash-deadlines"><div class="empty-state">No upcoming deadlines</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BELL SCHEDULE -->
+    <div class="page" style="display:none" id="page-schedule">
+      <div class="page-header">
+        <div><div class="page-title">Bell Schedule</div><div class="page-sub">Calin Forest HS — 2026-27</div></div>
+        <button class="btn-blue" onclick="saveSchedule()">Save Classes</button>
+      </div>
+      <div class="period-banner" id="schedule-banner">
+        <div><div class="period-banner-label">NOW IN</div><div class="period-banner-name" id="sched-period">—</div></div>
+        <div class="period-banner-right"><div class="period-banner-time" id="sched-time">—</div><div class="period-banner-sub">remaining</div></div>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="sched-progress" style="width:0%"></div></div>
+      <div class="card" style="margin-top:16px;">
+        <table class="schedule-table">
+          <thead><tr><th>Period</th><th>Time</th><th>Your Class</th></tr></thead>
+          <tbody id="schedule-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STUDENT ID -->
+    <div class="page" style="display:none" id="page-idcard">
+      <div class="page-header">
+        <div><div class="page-title">Student ID</div><div class="page-sub">Your digital school ID</div></div>
+        <button class="btn-blue" onclick="saveID()">Save ID</button>
+      </div>
+      <div class="id-card-wrap">
+        <div class="id-card">
+          <div class="id-card-header">
+            <div class="id-avatar" id="id-avatar">?</div>
+            <div>
+              <div class="id-name" id="id-name">Your Name</div>
+              <div class="id-school-label" id="id-school-label">School Name</div>
+            </div>
+            <div class="id-active-badge">● ACTIVE</div>
+          </div>
+          <div class="id-divider"></div>
+          <div class="id-fields">
+            <div><div class="id-field-label">GRADE</div><div class="id-field-val" id="id-grade-display">—</div></div>
+            <div><div class="id-field-label">STUDENT ID</div><div class="id-field-val" id="id-num-display">—</div></div>
+            <div><div class="id-field-label">SCHOOL YEAR</div><div class="id-field-val">2026-27</div></div>
+          </div>
+          <div class="id-barcode" id="id-barcode"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <div class="card-label">EDIT YOUR ID</div>
+        <select class="input" id="id-grade-input">
+          <option value="">Select grade...</option>
+          <option>9th Grade</option><option>10th Grade</option><option>11th Grade</option><option>12th Grade</option>
+        </select>
+        <input class="input" type="text" placeholder="Student ID number..." id="id-num-input">
+        <button class="btn-blue" onclick="saveID()">Save</button>
+      </div>
+    </div>
+
+    <!-- WEATHER -->
+    <div class="page" style="display:none" id="page-weather">
+      <div class="page-header">
+        <div><div class="page-title">Weather</div><div class="page-sub">Myrtle Beach, SC</div></div>
+        <button class="btn-ghost" onclick="loadWeather()">Refresh</button>
+      </div>
+      <div class="card weather-main" id="weather-card">
+        <div class="weather-loading">Loading weather...</div>
+      </div>
+    </div>
+
+    <!-- HOMEWORK -->
+    <div class="page" style="display:none" id="page-homework">
+      <div class="page-header">
+        <div><div class="page-title">Homework</div><div class="page-sub">Track your assignments</div></div>
+        <button class="btn-blue" onclick="openModal('hw-modal')">+ Add Task</button>
+      </div>
+      <div class="card">
+        <div class="card-label">PENDING</div>
+        <div id="hw-pending"><div class="empty-state">No pending tasks 🎉</div></div>
+      </div>
+      <div class="card">
+        <div class="card-label">COMPLETED</div>
+        <div id="hw-done"><div class="empty-state">Nothing completed yet</div></div>
+      </div>
+    </div>
+
+    <!-- CLASS NOTES -->
+    <div class="page" style="display:none" id="page-notes">
+      <div class="page-header">
+        <div><div class="page-title">Class Notes</div><div class="page-sub">Organized by class</div></div>
+        <button class="btn-blue" onclick="saveNote()">Save Note</button>
+      </div>
+      <div class="notes-layout">
+        <div class="notes-left">
+          <select class="input" id="notes-class-select" onchange="loadNote()">
+            <option value="">Select class...</option>
+          </select>
+          <div id="notes-list"><div class="empty-state">No notes saved</div></div>
+        </div>
+        <div class="notes-right">
+          <textarea class="input textarea-big" id="notes-editor" placeholder="Type your notes here..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEADLINES -->
+    <div class="page" style="display:none" id="page-deadlines">
+      <div class="page-header">
+        <div><div class="page-title">Deadlines</div><div class="page-sub">Track due dates</div></div>
+        <button class="btn-blue" onclick="openModal('dl-modal')">+ Add Deadline</button>
+      </div>
+      <div id="dl-list"><div class="empty-state">No deadlines added yet</div></div>
+    </div>
+
+    <!-- EXAM COUNTDOWN -->
+    <div class="page" style="display:none" id="page-countdown">
+      <div class="page-header">
+        <div><div class="page-title">Exam Countdown</div><div class="page-sub">Count down to your exams</div></div>
+        <button class="btn-blue" onclick="openModal('exam-modal')">+ Add Exam</button>
+      </div>
+      <div class="grid-3" id="exam-list"><div class="empty-state">No exams added yet</div></div>
+    </div>
+
+    <!-- STUDY TIMER -->
+    <div class="page" style="display:none" id="page-studytimer">
+      <div class="page-header">
+        <div><div class="page-title">Study Timer</div><div class="page-sub">Pomodoro focus timer</div></div>
+      </div>
+      <div class="card timer-card">
+        <div class="timer-mode-row">
+          <button class="btn-ghost btn-sm active-mode" onclick="setTimerMode(25,'Focus',this)">Focus 25</button>
+          <button class="btn-ghost btn-sm" onclick="setTimerMode(5,'Short Break',this)">Break 5</button>
+          <button class="btn-ghost btn-sm" onclick="setTimerMode(15,'Long Break',this)">Long 15</button>
+        </div>
+        <div class="timer-label" id="timer-label">Focus Session</div>
+        <div class="timer-display" id="timer-display">25:00</div>
+        <div class="timer-sessions">Session <span id="timer-sessions">1</span></div>
+        <div class="timer-btns">
+          <button class="btn-blue" id="timer-start-btn" onclick="toggleTimer()">Start</button>
+          <button class="btn-ghost" onclick="resetTimer()">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLASHCARDS -->
+    <div class="page" style="display:none" id="page-flashcards">
+      <div class="page-header">
+        <div><div class="page-title">Flashcards</div><div class="page-sub">Study with flip cards</div></div>
+        <button class="btn-blue" onclick="openModal('fc-modal')">+ Add Card</button>
+      </div>
+      <div class="deck-tabs" id="deck-tabs"></div>
+      <div class="grid-3" id="fc-grid"><div class="empty-state">No flashcards yet</div></div>
+    </div>
+
+    <!-- ABSENCES -->
+    <div class="page" style="display:none" id="page-absences">
+      <div class="page-header">
+        <div><div class="page-title">Absences</div><div class="page-sub">Track your attendance</div></div>
+        <button class="btn-blue" onclick="openModal('abs-modal')">+ Log Absence</button>
+      </div>
+      <div class="grid-4">
+        <div class="stat-card"><div class="stat-val" id="abs-total">0</div><div class="stat-label">Total</div></div>
+        <div class="stat-card"><div class="stat-val red" id="abs-unex">0</div><div class="stat-label">Unexcused</div></div>
+        <div class="stat-card"><div class="stat-val green" id="abs-ex">0</div><div class="stat-label">Excused</div></div>
+        <div class="stat-card"><div class="stat-val gold" id="abs-tard">0</div><div class="stat-label">Tardies</div></div>
+      </div>
+      <div id="abs-warnings"></div>
+      <div class="grid-2">
+        <div class="card" style="border-color:var(--red)">
+          <div class="card-label" style="color:var(--red)">UNEXCUSED POLICY</div>
+          <div class="policy-item">3 consecutive = AIP</div>
+          <div class="policy-item">5+ total = AIP</div>
+          <div class="policy-item">5+ in semester = FA grade</div>
+          <div class="policy-item">3 tardies = 1 unexcused</div>
+          <div class="policy-item">18+ days = Chronically Absent</div>
+        </div>
+        <div class="card" style="border-color:var(--gold)">
+          <div class="card-label" style="color:var(--gold)">EXCUSED LIMITS</div>
+          <div class="policy-item">Parent notes: max 3/semester</div>
+          <div class="policy-item">Medical notes: max 8/block</div>
+          <div class="policy-item">College visits: 1 (11th), 2 (12th)</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px;">
+        <div class="card-label">ABSENCE LOG</div>
+        <div id="abs-log"><div class="empty-state">No absences logged</div></div>
+      </div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="page" style="display:none" id="page-calendar">
+      <div class="page-header">
+        <div><div class="page-title">Calendar</div><div class="page-sub">School & personal events</div></div>
+      </div>
+      <div class="card">
+        <div class="cal-header">
+          <button class="btn-ghost btn-sm" onclick="changeMonth(-1)">‹ Prev</button>
+          <div class="cal-month-label" id="cal-month-label">June 2026</div>
+          <button class="btn-ghost btn-sm" onclick="changeMonth(1)">Next ›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="cal-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span>Personal</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Deadline</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--gold)"></span>Holiday</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Day Off</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span>School Event</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANNOUNCEMENTS -->
+    <div class="page" style="display:none" id="page-announcements">
+      <div class="page-header">
+        <div><div class="page-title">Announcements</div><div class="page-sub">School-wide updates</div></div>
+        <button class="btn-blue admin-only" onclick="openModal('ann-modal')" style="display:none">+ Post</button>
+      </div>
+      <div id="ann-list"><div class="empty-state">No announcements yet</div></div>
+    </div>
+
+    <!-- CLASSROOM -->
+    <div class="page" style="display:none" id="page-classroom">
+      <div class="page-header">
+        <div><div class="page-title">Classroom</div><div class="page-sub">Your classes</div></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-ghost" onclick="openModal('join-modal')">Join Class</button>
+          <button class="btn-blue teacher-only" onclick="openModal('create-class-modal')" style="display:none">+ Create Class</button>
+        </div>
+      </div>
+      <div class="grid-3" id="classroom-list"><div class="empty-state">No classes yet. Join a class with a code!</div></div>
+    </div>
+
+    <!-- CLASSROOM DETAIL -->
+    <div class="page" style="display:none" id="page-classroom-detail">
+      <div class="page-header">
+        <div>
+          <button class="back-btn" onclick="nav('classroom')">← Back</button>
+          <div class="page-title" id="cd-title">Class Name</div>
+          <div class="page-sub" id="cd-sub">Teacher • Subject</div>
+        </div>
+        <button class="btn-blue" onclick="openPassRequest()" id="hall-pass-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="margin-right:5px;vertical-align:middle;"><rect x="3" y="2" width="14" height="20" rx="2"/><circle cx="14" cy="12" r="1.5" fill="currentColor"/><path d="M17 8l4 4-4 4"/></svg> Hall Pass</button>
+      </div>
+      <div class="tab-row" id="cd-tabs">
+        <button class="tab-btn active" onclick="switchCDTab('grades',this)">My Grades</button>
+        <button class="tab-btn teacher-only" onclick="switchCDTab('students',this)" style="display:none">Students</button>
+        <button class="tab-btn teacher-only" onclick="switchCDTab('assignments',this)" style="display:none">Assignments</button>
+        <button class="tab-btn teacher-only" onclick="switchCDTab('attendance',this);renderAttendance()" style="display:none">Attendance</button>
+        <button class="tab-btn teacher-only" onclick="switchCDTab('gradeentry',this);renderGradeEntry()" style="display:none">Enter Grades</button>
+        <button class="tab-btn teacher-only" onclick="switchCDTab('passes',this)" style="display:none">Hall Passes</button>
+      </div>
+      <div id="cd-grades-tab">
+        <div class="grade-circle-big" id="cd-grade-circle">—</div>
+        <div id="cd-assignments-list"><div class="empty-state">No assignments posted yet</div></div>
+        <div class="card" style="margin-top:14px;">
+          <div class="card-label">WHAT-IF CALCULATOR</div>
+          <input class="input" type="number" placeholder="Hypothetical score (0-100)..." id="whatif-score">
+          <input class="input" type="number" placeholder="Weight (1-100)..." id="whatif-weight">
+          <button class="btn-blue" onclick="calcWhatIf()">Calculate</button>
+          <div id="whatif-result" style="margin-top:8px;color:var(--blue-light);font-weight:600;"></div>
+        </div>
+      </div>
+      <div id="cd-students-tab" style="display:none"><div id="cd-students-list"><div class="empty-state">No students yet</div></div></div>
+      <div id="cd-attendance-tab" style="display:none">
+        <div class="card"><div id="attendance-list"><div class="empty-state">Loading attendance...</div></div></div>
+      </div>
+      <div id="cd-gradeentry-tab" style="display:none">
+        <div class="card"><div id="grade-entry-list"><div class="empty-state">Loading grade entry...</div></div></div>
+      </div>
+      <div id="cd-assignments-tab" style="display:none">
+        <button class="btn-blue" onclick="openModal('post-assignment-modal')" style="margin-bottom:14px;">+ Post Assignment</button>
+        <div id="cd-assignments-teacher-list"><div class="empty-state">No assignments posted yet</div></div>
+      </div>
+      <div id="cd-passes-tab" style="display:none">
+        <div class="card">
+          <div class="card-label" style="color:var(--gold)">PENDING REQUESTS</div>
+          <div id="pending-passes"><div class="empty-state">No pending pass requests</div></div>
+        </div>
+        <div class="card" style="margin-top:14px;">
+          <div class="card-label" style="color:var(--green)">ACTIVE PASSES</div>
+          <div id="active-passes"><div class="empty-state">No active passes</div></div>
+        </div>
+        <div class="card" style="margin-top:14px;">
+          <div class="card-label">ENDED PASSES (last 10)</div>
+          <div id="ended-passes"><div class="empty-state">No ended passes</div></div>
+        </div>
+        <div class="card" style="margin-top:14px;">
+          <div class="card-label">VERIFY PASS ID</div>
+          <div style="display:flex;gap:8px;">
+            <input class="input" style="flex:1;margin:0;" placeholder="Enter Pass ID (e.g. HP225417)..." id="verify-pass-input">
+            <button class="btn-blue" onclick="verifyPass()">Verify</button>
+          </div>
+          <div id="verify-result" style="margin-top:10px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HALL PASS — STUDENT VIEW -->
+    <div class="page" style="display:none" id="page-hallpass">
+      <!-- MOBILE FULLSCREEN PASS -->
+      <div class="pass-mobile" id="pass-mobile-view">
+        <div class="pass-card">
+          <div class="pass-card-top">
+            <div class="pass-student-info">
+              <div class="pass-avatar" id="pass-avatar">?</div>
+              <div>
+                <div class="pass-student-name" id="pass-student-name">Student</div>
+                <div class="pass-school-name" id="pass-school-name">School</div>
+              </div>
+            </div>
+            <div class="pass-ring-wrap">
+              <svg class="pass-ring-svg" viewBox="0 0 100 100">
+                <circle class="pass-ring-bg" cx="50" cy="50" r="42"/>
+                <circle class="pass-ring-fill" cx="50" cy="50" r="42" id="pass-ring-circle"/>
+              </svg>
+              <div class="pass-ring-inner">
+                <div class="pass-ring-pct" id="pass-ring-pct">100%</div>
+              </div>
+            </div>
+          </div>
+          <div class="pass-divider"></div>
+          <div class="pass-dest-box" id="pass-dest-box">
+            <div>
+              <div class="pass-dest-label">DESTINATION</div>
+              <div class="pass-dest-name" id="pass-dest-name">—</div>
+            </div>
+            <div class="pass-timer-right">
+              <div class="pass-timer-num" id="pass-timer-num">0:00</div>
+              <div class="pass-timer-left">LEFT</div>
+            </div>
+          </div>
+          <div class="pass-info-row">
+            <div class="pass-info-col">
+              <div class="pass-info-label">TIME ISSUED</div>
+              <div class="pass-info-val" id="pass-issued">—</div>
+            </div>
+            <div class="pass-info-col">
+              <div class="pass-info-label">TIME LIMIT</div>
+              <div class="pass-info-val" id="pass-limit">—</div>
+            </div>
+            <div class="pass-info-col">
+              <div class="pass-info-label">PASS ID</div>
+              <div class="pass-info-val" id="pass-id-display">#HP000000</div>
+            </div>
+          </div>
+          <div class="pass-divider"></div>
+          <div class="pass-info-row">
+            <div class="pass-info-col">
+              <div class="pass-info-label">APPROVED BY</div>
+              <div class="pass-info-val italic" id="pass-approved-by">—</div>
+            </div>
+            <div class="pass-info-col">
+              <div class="pass-info-label">SCHOOL YEAR</div>
+              <div class="pass-info-val italic">2025-2026</div>
+            </div>
+          </div>
+          <div class="pass-msg-section" id="pass-msg-section" style="display:none">
+            <div class="pass-msg-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="margin-right:4px;vertical-align:middle;"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> MESSAGE FROM TEACHER</div>
+            <div class="pass-msg-text" id="pass-msg-text"></div>
+            <div style="display:flex;gap:8px;margin-top:8px;">
+              <input class="input" style="flex:1;margin:0;font-size:14px;" placeholder="Reply to teacher..." id="pass-reply-input">
+              <button class="btn-blue btn-sm" onclick="sendPassReply()">Send</button>
+            </div>
+          </div>
+          <button class="btn-pass-end" onclick="endPass()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="16" height="16" style="margin-right:6px;vertical-align:middle;"><polyline points="20,6 9,17 4,12"/></svg> Back in Class</button>
+        </div>
+      </div>
+
+      <!-- DESKTOP PASS VIEW -->
+      <div class="pass-desktop" id="pass-desktop-view">
+        <div class="page-header">
+          <div><div class="page-title">Hall Pass</div><div class="page-sub" id="pass-id-desktop">#HP000000</div></div>
+          <button class="btn-red" onclick="endPass()">End Pass</button>
+        </div>
+        <div class="grid-2">
+          <div class="card" style="text-align:center;padding:32px;">
+            <div class="desktop-dest-label">DESTINATION</div>
+            <div class="desktop-dest-name" id="desktop-dest-name">—</div>
+            <div class="desktop-pass-ring-wrap">
+              <svg class="desktop-ring-svg" viewBox="0 0 120 120">
+                <circle class="pass-ring-bg" cx="60" cy="60" r="50"/>
+                <circle class="pass-ring-fill" cx="60" cy="60" r="50" id="desktop-ring-circle"/>
+              </svg>
+              <div class="desktop-ring-inner">
+                <div class="desktop-timer-num" id="desktop-timer-num">0:00</div>
+                <div class="desktop-timer-left">remaining</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-label">PASS DETAILS</div>
+            <div class="pass-detail-row"><span>Student</span><span id="desktop-student-name">—</span></div>
+            <div class="pass-detail-row"><span>Pass ID</span><span id="desktop-pass-id">#HP000000</span></div>
+            <div class="pass-detail-row"><span>Time Issued</span><span id="desktop-issued">—</span></div>
+            <div class="pass-detail-row"><span>Time Limit</span><span id="desktop-limit">—</span></div>
+            <div class="pass-detail-row"><span>Approved By</span><span id="desktop-approved">—</span></div>
+            <div class="pass-detail-row"><span>School Year</span><span>2025-2026</span></div>
+            <div id="desktop-msg-section" style="display:none;margin-top:12px;">
+              <div class="card-label">MESSAGE FROM TEACHER</div>
+              <div class="pass-msg-text" id="desktop-msg-text"></div>
+              <div style="display:flex;gap:8px;margin-top:8px;">
+                <input class="input" style="flex:1;margin:0;" placeholder="Reply..." id="desktop-reply-input">
+                <button class="btn-blue btn-sm" onclick="sendPassReplyDesktop()">Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASS REQUEST SCREEN -->
+      <div class="page-header" id="pass-request-screen">
+        <div><div class="page-title">Request Hall Pass</div><div class="page-sub">Select your destination</div></div>
+      </div>
+      <div class="grid-3" id="dest-grid" style="display:none">
+        <div class="dest-card" onclick="selectDest(this,'Bathroom',5)"><div class="dest-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="1.8" width="36" height="36"><path d="M7 3h2v4H7zM7 7C5.3 7 4 8.3 4 10v8h6v-3h4v3h6V10c0-1.7-1.3-3-3-3H7z"/><path d="M8 17v3M16 17v3"/><circle cx="15" cy="5" r="2"/></svg></div><div class="dest-name">Bathroom</div><div class="dest-time">5 min</div></div>
+        <div class="dest-card" onclick="selectDest(this,'Water Fountain',3)"><div class="dest-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="1.8" width="36" height="36"><path d="M12 2C8 8 6 11 6 14a6 6 0 0012 0c0-3-2-6-6-12z"/><path d="M6 14h12"/></svg></div><div class="dest-name">Water Fountain</div><div class="dest-time">3 min</div></div>
+        <div class="dest-card" onclick="selectDest(this,'Nurse',10)"><div class="dest-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="1.8" width="36" height="36"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg></div><div class="dest-name">Nurse</div><div class="dest-time">10 min</div></div>
+        <div class="dest-card" onclick="selectDest(this,'Front Office',15)"><div class="dest-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="1.8" width="36" height="36"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div><div class="dest-name">Front Office</div><div class="dest-time">15 min</div></div>
+        <div class="dest-card" onclick="selectDest(this,'Library',15)"><div class="dest-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="1.8" width="36" height="36"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div><div class="dest-name">Library</div><div class="dest-time">15 min</div></div>
+        <div class="dest-card" onclick="selectDest(this,'Guidance',20)"><div class="dest-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="1.8" width="36" height="36"><circle cx="12" cy="12" r="10"/><polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88 16.24,7.76"/></svg></div><div class="dest-name">Guidance</div><div class="dest-time">20 min</div></div>
+      </div>
+      <div id="pass-pending-screen" style="display:none;text-align:center;padding:40px;">
+        <div style="margin-bottom:16px;"><svg viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="1.5" width="56" height="56"><path d="M5 3h14M5 21h14M6 3v4l6 5-6 5v4M18 3v4l-6 5 6 5v4"/></svg></div>
+        <div class="page-title">Waiting for Approval</div>
+        <div class="page-sub" style="margin-top:8px;">Your teacher will approve or deny your request</div>
+      </div>
+    </div>
+
+    <!-- CLUBS -->
+    <div class="page" style="display:none" id="page-clubs">
+      <div class="page-header">
+        <div><div class="page-title">Clubs</div><div class="page-sub">School clubs & organizations</div></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-ghost" onclick="joinClubByCode()">Join by Code</button>
+          <button class="btn-blue admin-only" onclick="openModal('club-modal')" style="display:none">+ Create Club</button>
+        </div>
+      </div>
+      <div class="grid-3" id="clubs-list"><div class="empty-state">No clubs yet</div></div>
+    </div>
+
+    <!-- SPORTS -->
+    <div class="page" style="display:none" id="page-sports">
+      <div class="page-header">
+        <div><div class="page-title">Panthers Sports</div><div class="page-sub">Carolina Forest HS game results</div></div>
+        <button class="btn-blue admin-only" onclick="openModal('sport-modal')" style="display:none">+ Add Result</button>
+      </div>
+      <div id="sports-list"><div class="empty-state">No game results yet</div></div>
+    </div>
+
+    <!-- POLLS -->
+    <div class="page" style="display:none" id="page-polls">
+      <div class="page-header">
+        <div><div class="page-title">School Polls</div><div class="page-sub">Vote on school topics</div></div>
+        <button class="btn-blue admin-only" onclick="openModal('poll-modal')" style="display:none">+ Create Poll</button>
+      </div>
+      <div id="polls-list"><div class="empty-state">No polls yet</div></div>
+    </div>
+
+    <!-- DIRECTORY -->
+    <div class="page" style="display:none" id="page-directory">
+      <div class="page-header">
+        <div><div class="page-title">Student Directory</div><div class="page-sub">Find students at your school</div></div>
+      </div>
+      <div class="card">
+        <input class="input" placeholder="Search by name..." id="dir-search" oninput="filterDir()">
+        <div id="dir-list"><div class="empty-state">Loading directory...</div></div>
+      </div>
+    </div>
+
+    <!-- LOST & FOUND -->
+    <div class="page" style="display:none" id="page-lost">
+      <div class="page-header">
+        <div><div class="page-title">Lost & Found</div><div class="page-sub">Post lost or found items</div></div>
+        <button class="btn-blue" onclick="openModal('lf-modal')">+ Post Item</button>
+      </div>
+      <div id="lf-list"><div class="empty-state">No items posted</div></div>
+    </div>
+
+    <!-- CARPOOL -->
+    <div class="page" style="display:none" id="page-carpool">
+      <div class="page-header">
+        <div><div class="page-title">Carpool</div><div class="page-sub">Find rides near you</div></div>
+        <button class="btn-blue" onclick="openModal('cp-modal')">+ Post</button>
+      </div>
+      <div id="cp-list"><div class="empty-state">No carpool posts yet</div></div>
+    </div>
+
+    <!-- GROUP CHATS -->
+    <div class="page" style="display:none" id="page-chat">
+      <div class="page-header">
+        <div><div class="page-title">Group Chats</div><div class="page-sub">Auto-delete after 2 weeks</div></div>
+        <button class="btn-blue" onclick="openModal('chat-modal')">+ New Chat</button>
+      </div>
+      <div class="chat-layout">
+        <div class="chat-sidebar" id="chat-list-panel">
+          <div id="chat-list"><div class="empty-state">No chats yet</div></div>
+        </div>
+        <div class="chat-main" id="chat-main-panel">
+          <div class="chat-empty-state">Select a chat to start messaging</div>
+        </div>
+      </div>
+      <div id="chat-mod-panel"></div>
+    </div>
+
+    <!-- ADMIN CHAT -->
+    <div class="page" style="display:none" id="page-adminchat">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Admin Chat</div>
+          <div class="page-sub">Private — admins only 🔒</div>
+        </div>
+      </div>
+      <div style="background:var(--card);border:1px solid rgba(245,158,11,.3);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;height:calc(100vh - 180px);">
+        <div style="padding:10px 14px;background:rgba(245,158,11,.08);border-bottom:1px solid rgba(245,158,11,.2);font-size:12px;color:#f59e0b;font-weight:600;">
+          ⚡ Admin-only channel — only admins at your school can see this
+        </div>
+        <div class="chat-messages" id="admin-chat-messages" style="flex:1;overflow-y:auto;padding:14px;"></div>
+        <div id="file-preview-adminchat" style="display:none;padding:8px 12px;background:var(--card2);border-top:1px solid var(--border);"></div>
+        <div class="chat-input-area" style="padding:8px;gap:6px;">
+          <label style="cursor:pointer;color:var(--gray);display:flex;align-items:center;padding:0 4px;" title="Send image">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+            <input type="file" accept="image/*" style="display:none;" onchange="previewFile(this,'file-preview-adminchat')">
+          </label>
+          <button onclick="toggleVoiceRecorder('admin-chat-input','file-preview-adminchat')" id="voice-btn-admin-chat-input" style="background:none;border:none;color:var(--gray);cursor:pointer;padding:0 4px;display:flex;align-items:center;" title="Voice note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
+          </button>
+          <input class="chat-input" placeholder="Message admins..." id="admin-chat-input" onkeydown="if(event.key==='Enter')sendStaffMsg('admin')">
+          <button class="chat-send" onclick="sendStaffMsg('admin')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9 22,2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEACHER CHAT -->
+    <div class="page" style="display:none" id="page-teacherchat">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Teacher Chat</div>
+          <div class="page-sub">Private — teachers & admins only 🔒</div>
+        </div>
+      </div>
+      <div style="background:var(--card);border:1px solid rgba(139,92,246,.3);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;height:calc(100vh - 180px);">
+        <div style="padding:10px 14px;background:rgba(139,92,246,.08);border-bottom:1px solid rgba(139,92,246,.2);font-size:12px;color:#8b5cf6;font-weight:600;">
+          👨‍🏫 Staff channel — teachers and admins only
+        </div>
+        <div class="chat-messages" id="teacher-chat-messages" style="flex:1;overflow-y:auto;padding:14px;"></div>
+        <div id="file-preview-teacherchat" style="display:none;padding:8px 12px;background:var(--card2);border-top:1px solid var(--border);"></div>
+        <div class="chat-input-area" style="padding:8px;gap:6px;">
+          <label style="cursor:pointer;color:var(--gray);display:flex;align-items:center;padding:0 4px;" title="Send image">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+            <input type="file" accept="image/*" style="display:none;" onchange="previewFile(this,'file-preview-teacherchat')">
+          </label>
+          <button onclick="toggleVoiceRecorder('teacher-chat-input','file-preview-teacherchat')" id="voice-btn-teacher-chat-input" style="background:none;border:none;color:var(--gray);cursor:pointer;padding:0 4px;display:flex;align-items:center;" title="Voice note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
+          </button>
+          <input class="chat-input" placeholder="Message staff..." id="teacher-chat-input" onkeydown="if(event.key==='Enter')sendStaffMsg('teacher')">
+          <button class="chat-send" onclick="sendStaffMsg('teacher')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9 22,2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- TIP LINE -->
+    <div class="page" style="display:none" id="page-tips">
+      <div class="page-header">
+        <div><div class="page-title">Anonymous Tip Line</div><div class="page-sub">Report concerns safely and anonymously</div></div>
+      </div>
+      <div id="tip-submit-section">
+        <div class="card">
+          <div class="card-label">SUBMIT ANONYMOUS TIP</div>
+          <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">Your identity will never be revealed. Tips go directly to school administrators.</p>
+          <select class="input" id="tip-category">
+            <option value="Bullying">Bullying</option>
+            <option value="Safety">Safety Concern</option>
+            <option value="Drugs">Drugs/Alcohol</option>
+            <option value="Weapons">Weapons</option>
+            <option value="Mental Health">Mental Health</option>
+            <option value="Other">Other</option>
+          </select>
+          <textarea class="input" style="min-height:120px;" placeholder="Describe the situation..." id="tip-message"></textarea>
+          <button class="btn-blue" onclick="submitTip()">Submit Anonymously</button>
+        </div>
+      </div>
+      <div id="tip-admin-section" style="display:none;">
+        <div class="card-label">INCOMING TIPS</div>
+        <div id="tip-list"><div class="empty-state">No tips yet</div></div>
+      </div>
+    </div>
+
+    <!-- NEWSPAPER -->
+    <div class="page" style="display:none" id="page-newspaper">
+      <div class="page-header">
+        <div><div class="page-title">School Newspaper</div><div class="page-sub">Articles and stories from your school</div></div>
+        <button class="btn-blue admin-only" onclick="openModal('article-modal')" style="display:none">+ Write Article</button>
+      </div>
+      <div id="newspaper-list"><div class="empty-state">No articles yet</div></div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="page" style="display:none" id="page-leaderboard">
+      <div class="page-header">
+        <div><div class="page-title">Leaderboard</div><div class="page-sub">Top students for on-time hall passes</div></div>
+        <button class="btn-ghost" onclick="renderLeaderboard()">Refresh</button>
+      </div>
+      <div id="leaderboard-list"><div class="empty-state">Loading...</div></div>
+    </div>
+
+    <!-- STUDY GROUPS -->
+    <div class="page" style="display:none" id="page-studygroups">
+      <div class="page-header">
+        <div><div class="page-title">Study Groups</div><div class="page-sub">Join or create study sessions</div></div>
+        <button class="btn-blue" onclick="openModal('sg-modal')">+ Post Group</button>
+      </div>
+      <div id="sg-list"><div class="empty-state">No study groups yet</div></div>
+    </div>
+
+    <!-- REMINDERS -->
+    <div class="page" style="display:none" id="page-reminders">
+      <div class="page-header">
+        <div><div class="page-title">Reminders</div><div class="page-sub">Personal reminders</div></div>
+        <button class="btn-blue" onclick="openModal('rem-modal')">+ Add Reminder</button>
+      </div>
+      <div id="rem-list"><div class="empty-state">No reminders yet</div></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="page" style="display:none" id="page-profile">
+      <div class="page-header">
+        <div><div class="page-title">Profile & Admin</div><div class="page-sub">Your account settings</div></div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div class="profile-avatar-big" id="profile-avatar-big">?</div>
+            <div class="card-label" style="margin-top:16px;">CHOOSE AVATAR COLOR</div>
+            <div class="avatar-grid" id="avatar-grid">
+              <div class="avatar-swatch selected" style="background:linear-gradient(135deg,#1a56db,#3b82f6)" onclick="selectAvatar(this,'linear-gradient(135deg,#1a56db,#3b82f6)')"></div>
+              <div class="avatar-swatch" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)" onclick="selectAvatar(this,'linear-gradient(135deg,#7c3aed,#a78bfa)')"></div>
+              <div class="avatar-swatch" style="background:linear-gradient(135deg,#dc2626,#fb923c)" onclick="selectAvatar(this,'linear-gradient(135deg,#dc2626,#fb923c)')"></div>
+              <div class="avatar-swatch" style="background:linear-gradient(135deg,#059669,#34d399)" onclick="selectAvatar(this,'linear-gradient(135deg,#059669,#34d399)')"></div>
+              <div class="avatar-swatch" style="background:linear-gradient(135deg,#be185d,#f472b6)" onclick="selectAvatar(this,'linear-gradient(135deg,#be185d,#f472b6)')"></div>
+              <div class="avatar-swatch" style="background:linear-gradient(135deg,#b45309,#fbbf24)" onclick="selectAvatar(this,'linear-gradient(135deg,#b45309,#fbbf24)')"></div>
+              <div class="avatar-swatch" style="background:linear-gradient(135deg,#0891b2,#22d3ee)" onclick="selectAvatar(this,'linear-gradient(135deg,#0891b2,#22d3ee)')"></div>
+              <div class="avatar-swatch" style="background:linear-gradient(135deg,#374151,#9ca3af)" onclick="selectAvatar(this,'linear-gradient(135deg,#374151,#9ca3af)')"></div>
+            </div>
+            <div class="card-label" style="margin-top:16px;">DISPLAY NAME</div>
+            <input class="input" id="profile-name-input" placeholder="Your name...">
+            <button class="btn-blue" onclick="saveProfile()">Save Profile</button>
+          </div>
+          <div class="card" style="margin-top:14px;">
+            <div class="card-label">ACCOUNT INFO</div>
+            <div class="info-row"><span class="info-label">Email</span><span id="info-email">—</span></div>
+            <div class="info-row"><span class="info-label">School</span><span id="info-school">—</span></div>
+            <div class="info-row"><span class="info-label">Role</span><span id="info-role">—</span></div>
+            <div class="info-row"><span class="info-label">Grade</span><span id="info-grade">—</span></div>
+          </div>
+        </div>
+        <div class="admin-only" id="admin-panel" style="display:none">
+          <div class="card">
+            <div class="card-label" style="color:var(--gold)"><svg viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" stroke-width="1" width="14" height="14" style="margin-right:5px;vertical-align:middle;"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/></svg> ADMIN PANEL</div>
+            <div class="card-label" style="margin-top:12px;color:var(--purple)">GRANT TEACHER ACCESS</div>
+            <div style="font-size:12px;color:var(--gray);margin-bottom:8px;">Enter their signup email to give teacher powers</div>
+            <input class="input" placeholder="Teacher email..." id="teacher-email-input">
+            <button class="btn-blue" onclick="approveTeacher()">+ Grant Teacher</button>
+            <div id="approved-teachers-list" style="margin-top:10px;"></div>
+          </div>
+          <div class="card" style="margin-top:14px;">
+            <div class="card-label" style="color:var(--gold)">GRANT ADMIN ACCESS</div>
+            <div style="font-size:12px;color:var(--gray);margin-bottom:8px;">Enter their signup email to give full admin powers</div>
+            <input class="input" placeholder="Admin email..." id="admin-email-input">
+            <button class="btn-blue" onclick="grantAdmin()">+ Grant Admin</button>
+            <div id="approved-admins-list" style="margin-top:10px;"></div>
+          </div>
+          <div class="card" style="margin-top:14px;">
+            <div class="card-label">BULK GRANT TEACHERS</div>
+            <textarea class="input" style="min-height:80px;" placeholder="One email per line..." id="bulk-teachers"></textarea>
+            <button class="btn-blue" onclick="bulkApproveTeachers()">Bulk Grant Teacher</button>
+          </div>
+          <div class="card" style="margin-top:14px;border:1px solid rgba(239,68,68,.3);">
+            <div class="card-label" style="color:#ef4444;">🚨 EMERGENCY ALERT</div>
+            <div style="font-size:12px;color:var(--gray);margin-bottom:8px;">Send an urgent alert to ALL students and staff instantly</div>
+            <button style="background:#ef4444;color:white;border:none;border-radius:10px;padding:12px 20px;font-weight:700;cursor:pointer;width:100%;" onclick="openModal('emergency-modal')">🚨 Send Emergency Alert</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page" style="display:none" id="page-teacherpanel">
+      <div class="page-header">
+        <div><div class="page-title">Teacher Panel</div><div class="page-sub">Manage hall passes</div></div>
+      </div>
+      <div class="card">
+        <div class="card-label">VERIFY PASS ID</div>
+        <div style="display:flex;gap:8px;">
+          <input class="input" style="flex:1;margin:0;" placeholder="Enter Pass ID (e.g. HP225417)..." id="tp-verify-input">
+          <button class="btn-blue" onclick="verifyPassTeacher()">Verify</button>
+        </div>
+        <div id="tp-verify-result" style="margin-top:10px;"></div>
+      </div>
+      <div class="card" style="margin-top:14px;">
+        <div class="card-label" style="color:var(--gold)">PENDING REQUESTS</div>
+        <div id="tp-pending"><div class="empty-state">No pending requests</div></div>
+      </div>
+      <div class="card" style="margin-top:14px;">
+        <div class="card-label" style="color:var(--green)">ACTIVE PASSES</div>
+        <div id="tp-active"><div class="empty-state">No active passes</div></div>
+      </div>
+      <div class="card" style="margin-top:14px;">
+        <div class="card-label">ENDED PASSES (last 10)</div>
+        <div id="tp-ended"><div class="empty-state">No ended passes</div></div>
+      </div>
+    </div>
+
+</div>
+  </div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-overlay" style="display:none" onclick="closeAllModals()"></div>
+
+<div class="modal" style="display:none" id="hw-modal">
+  <div class="modal-title">Add Homework Task</div>
+  <input class="input" placeholder="Task name..." id="hw-task-name">
+  <select class="input" id="hw-task-class"><option value="">Select class...</option></select>
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="addHW()">Add Task</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="dl-modal">
+  <div class="modal-title">Add Deadline</div>
+  <input class="input" placeholder="Assignment name..." id="dl-name">
+  <select class="input" id="dl-class"><option value="">Select class...</option></select>
+  <select class="input" id="dl-type"><option>Assignment</option><option>Test</option><option>Quiz</option><option>Project</option></select>
+  <input class="input" type="date" id="dl-date">
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="addDeadline()">Add</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="exam-modal">
+  <div class="modal-title">Add Exam</div>
+  <input class="input" placeholder="Exam name..." id="exam-name">
+  <input class="input" placeholder="Subject..." id="exam-subject">
+  <input class="input" type="date" id="exam-date">
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="addExam()">Add</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="fc-modal">
+  <div class="modal-title">Add Flashcard</div>
+  <input class="input" placeholder="Deck name..." id="fc-deck">
+  <input class="input" placeholder="Front (question/term)..." id="fc-front">
+  <input class="input" placeholder="Back (answer/definition)..." id="fc-back">
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="addFlashcard()">Add Card</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="abs-modal">
+  <div class="modal-title">Log Absence</div>
+  <input class="input" type="date" id="abs-date">
+  <select class="input" id="abs-type"><option>Unexcused</option><option>Parent Excused</option><option>Medical</option><option>College Visit</option><option>Tardy</option></select>
+  <input class="input" placeholder="Class/Period..." id="abs-class">
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="logAbsence()">Log</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="ann-modal">
+  <div class="modal-title">Post Announcement</div>
+  <input class="input" placeholder="Title..." id="ann-title">
+  <textarea class="input" style="min-height:100px;" placeholder="Announcement body..." id="ann-body"></textarea>
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="postAnnouncement()">Post</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="join-modal">
+  <div class="modal-title">Join a Class</div>
+  <input class="input" placeholder="Enter 6-character class code..." id="join-code" maxlength="6" style="text-transform:uppercase;font-size:20px;text-align:center;letter-spacing:4px;">
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="joinClass()">Join</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="create-class-modal">
+  <div class="modal-title">Create a Class</div>
+  <input class="input" placeholder="Class name..." id="cc-name">
+  <input class="input" placeholder="Subject..." id="cc-subject">
+  <select class="input" id="cc-semester"><option value="1">Semester 1</option><option value="2">Semester 2</option></select>
+  <select class="input" id="cc-color">
+    <option value="#1a56db">Blue</option><option value="#7c3aed">Purple</option>
+    <option value="#059669">Green</option><option value="#dc2626">Red</option>
+    <option value="#f59e0b">Gold</option><option value="#0891b2">Teal</option>
+  </select>
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="createClass()">Create</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="post-assignment-modal">
+  <div class="modal-title">Post Assignment</div>
+  <input class="input" placeholder="Assignment name..." id="pa-name">
+  <select class="input" id="pa-category"><option>Homework</option><option>Test</option><option>Quiz</option><option>Project</option><option>Participation</option></select>
+  <input class="input" type="number" placeholder="Weight % (e.g. 10)..." id="pa-weight" min="1" max="100">
+  <input class="input" type="date" id="pa-due">
+  <textarea class="input" placeholder="Description or instructions (optional)..." id="pa-desc" style="min-height:80px;"></textarea>
+  <input class="input" placeholder="Resource link (optional, e.g. https://...)..." id="pa-link">
+  <div style="font-size:12px;color:var(--gray);margin-bottom:6px;">Attach image or video (optional)</div>
+  <input type="file" accept="image/*,video/*" id="pa-file" style="color:var(--gray);font-size:13px;margin-bottom:8px;">
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="postAssignment()">Post</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="club-modal">
+  <div class="modal-title">Create Club</div>
+  <input class="input" placeholder="Club name..." id="club-name">
+  <input class="input" placeholder="Description..." id="club-desc">
+  <input class="input" placeholder="Emoji icon (e.g. 🎭)..." id="club-emoji">
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="createClub()">Create</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="sport-modal">
+  <div class="modal-title">Add Game Result</div>
+  <select class="input" id="sport-type"><option>Football</option><option>Basketball</option><option>Baseball</option><option>Soccer</option><option>Track</option><option>Swimming</option><option>Volleyball</option><option>Tennis</option><option>Golf</option></select>
+  <input class="input" placeholder="Opponent school..." id="sport-opp">
+  <div style="display:flex;gap:8px;">
+    <input class="input" type="number" placeholder="Our score" id="sport-us" style="flex:1">
+    <input class="input" type="number" placeholder="Their score" id="sport-them" style="flex:1">
+  </div>
+  <input class="input" type="date" id="sport-date">
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="addSportResult()">Add Result</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="poll-modal">
+  <div class="modal-title">Create Poll</div>
+  <input class="input" placeholder="Poll question..." id="poll-q">
+  <input class="input" placeholder="Option 1..." id="poll-o1">
+  <input class="input" placeholder="Option 2..." id="poll-o2">
+  <input class="input" placeholder="Option 3 (optional)..." id="poll-o3">
+  <input class="input" placeholder="Option 4 (optional)..." id="poll-o4">
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="createPoll()">Post Poll</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="lf-modal">
+  <div class="modal-title">Post Lost & Found Item</div>
+  <input class="input" placeholder="Item name..." id="lf-item">
+  <input class="input" placeholder="Location found/last seen..." id="lf-loc">
+  <select class="input" id="lf-status"><option>Lost</option><option>Found</option></select>
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="addLF()">Post</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="cp-modal">
+  <div class="modal-title">Post Carpool</div>
+  <input class="input" placeholder="Area / neighborhood..." id="cp-area">
+  <input class="input" type="number" placeholder="Seats available (0 = looking for ride)..." id="cp-seats">
+  <input class="input" placeholder="Contact info (Snap/IG/phone)..." id="cp-contact">
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="addCarpool()">Post</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="chat-modal">
+  <div class="modal-title">Create Group Chat</div>
+  <input class="input" placeholder="Chat name..." id="new-chat-name">
+  <div class="card-label" style="margin-bottom:8px;">ADD MEMBERS BY EMAIL</div>
+  <div id="chat-members-list" style="margin-bottom:8px;"></div>
+  <div style="display:flex;gap:8px;">
+    <input class="input" style="flex:1;margin:0;" placeholder="Enter member email..." id="chat-member-email">
+    <button class="btn-ghost" onclick="addChatMember()">Add</button>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:8px;">
+    <button class="btn-blue" style="flex:1" onclick="createChat()">Create Chat</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="sg-modal">
+  <div class="modal-title">Post Study Group</div>
+  <input class="input" placeholder="Subject..." id="sg-subj">
+  <input class="input" placeholder="Location..." id="sg-loc">
+  <input class="input" type="datetime-local" id="sg-time">
+  <input class="input" type="number" placeholder="Number of spots..." id="sg-spots">
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="addStudyGroup()">Post</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="club-announce-modal">
+  <div class="modal-title">Post Club Announcement</div>
+  <input class="input" placeholder="Title..." id="club-ann-title">
+  <textarea class="input" style="min-height:100px;" placeholder="Announcement body..." id="club-ann-body"></textarea>
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="postClubAnnouncement()">Post</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+<div class="modal" style="display:none" id="cal-modal">
+  <div class="modal-title" id="cal-modal-title">Events for June 1</div>
+  <div id="cal-modal-events" style="margin-bottom:12px;"></div>
+  <div class="card-label">ADD EVENT</div>
+  <input class="input" placeholder="Event title..." id="cal-event-title">
+  <select class="input" id="cal-event-type">
+    <option value="personal">Personal Event</option>
+    <option value="reminder">Reminder</option>
+    <option value="deadline">Deadline</option>
+    <option value="school">School Event (Admin only)</option>
+  </select>
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="addCalEvent()">Add Event</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="main.js"></script>
+  <!-- COPYRIGHT FOOTER -->
+  <div id="app-footer" style="display:none;margin-left:230px;padding:16px 28px;border-top:1px solid var(--border);background:var(--black);text-align:center;">
+    <div style="font-size:11px;color:var(--gray);">© 2026 <strong style="color:var(--white);">ScholarSync</strong> — All rights reserved.</div>
+    <div style="font-size:11px;color:var(--gray-dark);margin-top:3px;">Created by <strong style="color:var(--blue-light);">Mykah Sheppard</strong> • Horry County Schools, SC</div>
+    <div style="font-size:10px;color:var(--gray-dark);margin-top:3px;">Unauthorized reproduction or distribution is prohibited.</div>
+  </div>
+
+
+<div class="modal" style="display:none" id="article-modal">
+  <div class="modal-title">Write Article</div>
+  <input class="input" placeholder="Article title..." id="article-title">
+  <select class="input" id="article-category">
+    <option value="News">News</option>
+    <option value="Sports">Sports</option>
+    <option value="Opinion">Opinion</option>
+    <option value="Entertainment">Entertainment</option>
+    <option value="Academics">Academics</option>
+  </select>
+  <textarea class="input" style="min-height:150px;" placeholder="Write your article..." id="article-body"></textarea>
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="publishArticle()">Publish</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="emergency-modal">
+  <div class="modal-title" style="color:#ef4444;">🚨 Emergency Alert</div>
+  <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">This will send an urgent alert to ALL students and staff immediately.</p>
+  <textarea class="input" style="min-height:100px;" placeholder="Emergency message..." id="emergency-msg"></textarea>
+  <div style="display:flex;gap:8px;">
+    <button style="flex:1;background:#ef4444;color:white;border:none;border-radius:10px;padding:12px;font-weight:700;cursor:pointer;" onclick="sendEmergencyAlert()">🚨 Send Alert</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+  <div class="modal-title">Add Reminder</div>
+  <input class="input" placeholder="Reminder text..." id="rem-text">
+  <input class="input" type="date" id="rem-date">
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="addReminder()">Add</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="club-announce-modal">
+  <div class="modal-title">Post Club Announcement</div>
+  <input class="input" placeholder="Title..." id="club-ann-title">
+  <textarea class="input" style="min-height:100px;" placeholder="Announcement body..." id="club-ann-body"></textarea>
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="postClubAnnouncement()">Post</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="post-assignment-modal">
+  <div class="modal-title">Post Assignment</div>
+  <input class="input" placeholder="Assignment name..." id="pa-name">
+  <select class="input" id="pa-category"><option>Homework</option><option>Test</option><option>Quiz</option><option>Project</option><option>Participation</option></select>
+  <input class="input" type="number" placeholder="Weight % (e.g. 10)..." id="pa-weight" min="1" max="100">
+  <input class="input" type="date" id="pa-due">
+  <textarea class="input" placeholder="Description or instructions (optional)..." id="pa-desc" style="min-height:80px;"></textarea>
+  <input class="input" placeholder="Resource link (optional, e.g. https://...)..." id="pa-link">
+  <div style="font-size:12px;color:var(--gray);margin-bottom:6px;">Attach image or video (optional)</div>
+  <input type="file" accept="image/*,video/*" id="pa-file" style="color:var(--gray);font-size:13px;margin-bottom:8px;">
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="postAssignment()">Post</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="create-class-modal">
+  <div class="modal-title">Create a Class</div>
+  <input class="input" placeholder="Class name..." id="cc-name">
+  <input class="input" placeholder="Subject..." id="cc-subject">
+  <select class="input" id="cc-color">
+    <option value="#1a56db">Blue</option><option value="#7c3aed">Purple</option>
+    <option value="#059669">Green</option><option value="#dc2626">Red</option>
+    <option value="#f59e0b">Gold</option><option value="#0891b2">Teal</option>
+  </select>
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="createClass()">Create</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal" style="display:none" id="join-modal">
+  <div class="modal-title">Join a Class</div>
+  <input class="input" placeholder="Enter 6-character class code..." id="join-code" maxlength="6" style="text-transform:uppercase;font-size:20px;text-align:center;letter-spacing:4px;">
+  <div style="display:flex;gap:8px;">
+    <button class="btn-blue" style="flex:1" onclick="joinClass()">Join</button>
+    <button class="btn-ghost" onclick="closeAllModals()">Cancel</button>
+  </div>
+</div>
+
+</body>
+</html>
