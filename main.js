@@ -4587,12 +4587,19 @@ async function leaveCall(){
   _activeCallId = null;
 }
 
-async function endCallForAll(){
+async function endCallForAll(roomId){
   if(!confirm('End the call for everyone?')) return;
-  if(_activeCallId){
-    await db.collection('activeCalls').doc(_activeCallId).update({active: false});
+  // Use the room passed from the button first — _activeCallId is null once you've left the call screen
+  const id = roomId || _activeCallId;
+  if(id){
+    try{
+      await db.collection('activeCalls').doc(id).update({active: false, endedAt: FS.serverTimestamp()});
+    }catch(e){
+      alert('Could not end the call: '+e.message);
+      return;
+    }
   }
-  leaveCall();
+  await leaveCall();
 }
 
 // ---- CALL RESTRICTIONS ----
@@ -4621,7 +4628,7 @@ function listenClassroomCall(classId){
       const data = snap.data();
       const isHost = data.startedBy === currentUser.uid;
       if(isHost){
-        btn.innerHTML = `<button onclick="endCallForAll()" style="background:#ef4444;color:white;border:none;border-radius:10px;padding:10px 20px;font-weight:700;cursor:pointer;width:100%;">End Call</button>`;
+        btn.innerHTML = `<button onclick="endCallForAll('${classId}')" style="background:#ef4444;color:white;border:none;border-radius:10px;padding:10px 20px;font-weight:700;cursor:pointer;width:100%;">End Call</button>`;
       }else{
         btn.innerHTML = `<button onclick="joinCall('${classId}','${currentClass?.name||'Class'} Call')" style="background:#22c55e;color:white;border:none;border-radius:10px;padding:10px 20px;font-weight:700;cursor:pointer;width:100%;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="vertical-align:middle;margin-right:6px;"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
@@ -4652,7 +4659,7 @@ function listenChatCall(chatId, chatName){
       const data = snap.data();
       const isHost = data.startedBy === currentUser.uid;
       btn.innerHTML = isHost
-        ? `<button onclick="endCallForAll()" style="background:#ef4444;color:white;border:none;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;">End Call</button>`
+        ? `<button onclick="endCallForAll('${chatId}')" style="background:#ef4444;color:white;border:none;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;">End Call</button>`
         : `<button onclick="joinCall('${chatId}','${chatName}')" style="background:#22c55e;color:white;border:none;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;">Join Call</button>`;
     }else{
       btn.innerHTML = `<button onclick="startCall('${chatId}','${chatName} Call',false)" style="background:#1a56db;color:white;border:none;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;">
