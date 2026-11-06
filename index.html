@@ -751,7 +751,7 @@
         <button class="tab-btn teacher-only" onclick="switchCDTab('students',this)" style="display:none">Students</button>
         <button class="tab-btn teacher-only" onclick="switchCDTab('assignments',this)" style="display:none">Assignments</button>
         <button class="tab-btn teacher-only" onclick="switchCDTab('attendance',this);renderAttendance()" style="display:none">Attendance</button>
-        <button class="tab-btn teacher-only" onclick="switchCDTab('gradeentry',this);renderGradeEntry()" style="display:none">Enter Grades</button>
+        <button class="tab-btn teacher-only" onclick="switchCDTab('gradeentry',this);renderGradeEntry()" style="display:none">Gradebook</button>
         <button class="tab-btn teacher-only" onclick="switchCDTab('passes',this)" style="display:none">Hall Passes</button>
       </div>
       <div id="cd-grades-tab">
@@ -786,7 +786,7 @@
         <div class="card"><div id="grade-entry-list"><div class="empty-state">Loading grade entry...</div></div></div>
       </div>
       <div id="cd-assignments-tab" style="display:none">
-        <button class="btn-blue" onclick="openModal('post-assignment-modal')" style="margin-bottom:14px;">+ Post Assignment</button>
+        <button class="btn-blue" onclick="gbSetAssignmentTerm();openModal('post-assignment-modal')" style="margin-bottom:14px;">+ Post Assignment</button>
         <div id="cd-assignments-teacher-list"><div class="empty-state">No assignments posted yet</div></div>
       </div>
       <div id="cd-passes-tab" style="display:none">
@@ -1706,6 +1706,8 @@
 <div class="modal" style="display:none" id="post-assignment-modal">
   <div class="modal-title">Post Assignment</div>
   <input class="input" placeholder="Assignment name..." id="pa-name">
+  <div style="font-size:12px;color:var(--gray);margin-bottom:6px;">Term</div>
+  <select class="input" id="pa-term"><option>Q1</option><option>Q2</option><option>S1</option><option>Q3</option><option>Q4</option><option>S2</option></select>
   <select class="input" id="pa-category"><option>Homework</option><option>Test</option><option>Quiz</option><option>Project</option><option>Participation</option></select>
   <input class="input" type="number" placeholder="Weight % (e.g. 10)..." id="pa-weight" min="1" max="100">
   <input class="input" type="date" id="pa-due">
