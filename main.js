@@ -1383,6 +1383,7 @@ async function createClass(){
 async function postAssignment(){
   if(!currentClass)return;
   const name=document.getElementById('pa-name').value.trim();
+  const term=document.getElementById('pa-term')?.value||'Q1';
   const category=document.getElementById('pa-category').value;
   const weight=parseInt(document.getElementById('pa-weight').value)||10;
   const due=document.getElementById('pa-due').value;
@@ -1400,7 +1401,7 @@ async function postAssignment(){
       mediaUrl=result.url;mediaType=isVideo?'video':'image';
     }catch(e){alert('File upload failed: '+e.message);return;}
   }
-  const assignment={id:genId(),name,category,weight,due,link,desc,mediaUrl,mediaType,createdAt:new Date().toISOString()};
+  const assignment={id:genId(),name,term,category,weight,due,link,desc,mediaUrl,mediaType,createdAt:new Date().toISOString()};
   const assignments=[...(currentClass.assignments||[]),assignment];
   await db.collection('classrooms').doc(currentClass.id).update({assignments});
   currentClass.assignments=assignments;
@@ -3378,6 +3379,7 @@ async function markAttendance(uid,status,date){
 
 // ---- GRADE ENTRY FOR TEACHERS ----
 async function renderGradeEntry(){
+  if(window.gbRenderTeacher)return window.gbRenderTeacher();
   if(!currentClass)return;
   const el=document.getElementById('grade-entry-list');if(!el)return;
   const assignments=currentClass.assignments||[];
@@ -5220,7 +5222,7 @@ function renderHelpGuide(){
     <div class="card" style="margin-top:14px;">
       <div class="card-label">ENTERING GRADES</div>
       <p style="font-size:14px;color:var(--gray-light);line-height:1.6;">
-        Open a classroom → Enter Grades tab → type each student's score per assignment. Grades update live for students.
+      Open a classroom → Gradebook tab → choose Q1, Q2, S1, Q3, Q4, or S2. Edit a term grade on the roster, or click a student to enter assignment scores and edit that student's term grade. New assignments are assigned to the selected term.
       </p>
     </div>
     <div class="card" style="margin-top:14px;">
