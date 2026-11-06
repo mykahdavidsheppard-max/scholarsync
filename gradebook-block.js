@@ -176,10 +176,11 @@ async function gbRenderStudent(pane){
 // ---- HOOKS: add a "Term Grades" tab to the classroom page without editing existing code ----
 function gbInject(){
   const page=document.getElementById('page-classroom-detail');if(!page)return;
-  const row=page.querySelector('.tab-row');
-  if(row&&!document.getElementById('gb-tab-btn')){
+  const firstTab=page.querySelector('.tab-btn');
+  if(firstTab&&!document.getElementById('gb-tab-btn')){
     const b=document.createElement('button');b.id='gb-tab-btn';b.className='tab-btn';b.textContent='Term Grades';
-    b.onclick=function(){switchCDTab('termgrades',this);};row.appendChild(b);
+    b.onclick=function(){switchCDTab('termgrades',this);};
+    firstTab.parentElement.appendChild(b);
   }
   if(!document.getElementById('cd-termgrades-tab')){
     const anchor=document.getElementById('cd-grades-tab');if(!anchor)return;
